@@ -1,7 +1,27 @@
-doctype 5
+doctype html
 html(manifest=manifestid ? manifestid + ".manifest" : "empty.manifest")
   head
     title Attachment
 
+    script(src='/javascripts/vendor/jquery/jquery.js')
+
   body
     block content
+  
+    img(src='http://www.lolcats.com/images/u/12/43/lolcatsdotcomlikemyself.jpg')
+    img(src='http://www.lolcats.com/images/u/12/43/lolcatsdotcomnapkin.jpg')
+    img(src='http://www.lolcats.com/images/u/12/24/lolcatsdotcompromdate.jpg')
+    img(src='http://www.lolcats.com/images/u/07/22/lolcatsdotcomib5v9oe8urvsgmh0.jpg')
+    img(src='http://www.lolcats.com/images/u/08/29/lolcatsdotcompf8w6i8liikl5j5x.jpg')
+
+  script.
+
+    function check( event ) {
+      parent.APP.appcache.logEvent( event, document.URL );
+    }
+
+    $(document).ready( function () {
+      if ( parent.APP ) {
+        $(applicationCache).bind( 'updateready cached checking downloading error noupdate obsolete progress updateready', check );
+      }
+    });

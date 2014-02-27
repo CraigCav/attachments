@@ -2,22 +2,24 @@ define(function(require) {
   "use strict";
 
   var $ = require('jquery'),
-      downloader = require('./downloader');
+      downloader = require('./downloader'),
+      appcache = require('./appcache');
 
   function logControls() {
     return $('<ul id="log" />');
   }
 
-  function attachment(url) {
-    var $attachment = $('<li class="attachment" />');
+  function log( text ) {
+    var $log = $('<li class="log-entry" />');
 
-    $attachment.text( url );
+    $log.text( text );
 
-    return $attachment;
+    return $log;
   }
 
   function syncControls() {
-    var $trigger = $('<button class="sync-trigger" />');
+    var $log = logControls(),
+        $trigger = $('<button class="sync-trigger" />');
 
     function setButtonText() {
       $trigger.text( 'Download attachments' );
@@ -29,7 +31,7 @@ define(function(require) {
 
         attachments.forEach( function(key) {
 
-          attachment( key ).appendTo( document.getElementById('log') );
+          log( key ).appendTo( $log );
 
           downloader.addToCache( key );
 
@@ -41,13 +43,25 @@ define(function(require) {
 
     });
 
+    appcache.on('checking', function( event ) {
+      log( 'Checking for updates to ' + event.origin ).appendTo( $log );
+    });
+
+    appcache.on('downloading', function() {
+      log( 'Started Download.' ).appendTo( $log );
+    });
+    
+    appcache.on('progress', function( event ) {
+      log( event.loaded + " of " + event.total + " downloaded." ).appendTo( $log );
+    });
+
     setButtonText();
+    $log.prependTo( document.body );
 
     return $trigger;
   }
 
   var render = function(element) {
-    logControls().prependTo( document.body );
     syncControls().prependTo( document.body );
   };
 
